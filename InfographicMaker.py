@@ -3,6 +3,12 @@ import urllib.request
 import os, shutil
 from PIL import ImageTk, Image
 
+'''
+Author = Flaps#9562
+Year = 2021
+Function = RotMG Infographic Maker. HAS ONLY BEEN TESTED ON WINDOWS 10. USE AT YOUR OWN RISK. EXAMPLE INPUT AT BOTTOM.
+'''
+
 def errorMessage(e):
     errorWindow = tk.Toplevel()
     errorWindow.geometry('600x100')
