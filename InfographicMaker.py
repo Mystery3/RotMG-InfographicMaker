@@ -200,7 +200,7 @@ def addGraphic():
     manageWindow()
 
 def manageWindow():
-    window.geometry('{}x740'.format(len(dungeonOptions)*615) + '+25-150')
+    window.geometry('{}x740'.format(len(dungeonOptions)*615))
     
     length = len(dungeonOptions)
 
