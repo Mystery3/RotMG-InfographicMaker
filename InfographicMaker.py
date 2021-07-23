@@ -62,13 +62,14 @@ def genInfographic():
         instructions()
         return
 
-    dungeonList, dungeonLinkList, itemLists = [], [], []
+    dungeonList, dungeonLengths, dungeonLinkList, itemLists = [], [], [], []
     length = len(dungeonChoices)
     rows, x, y = 0, 5, 5
 
     try:
         for i in range(length):
             dungeonList.append(dungeonOptions[i].get())
+            dungeonLengths.append(len(dungeonOptions[i].get()))
 
             dungeonLinkList.append(dungeons[dungeonOptions[i].get()])
             
@@ -92,13 +93,18 @@ def genInfographic():
         errorMessage(e)
         return
 
+    if max(dungeonLengths) <= 20:
+        xaxis = 475
+    else:
+        xaxis = 60 + round((max(dungeonLengths) * 18))
+
     yaxis = (length * 60) + (rows * 40) + 5
 
     infographic = tk.Toplevel()
-    infographic.geometry('550x{}'.format(yaxis))
+    infographic.geometry('{}x{}'.format(xaxis, yaxis))
     infographic.resizable('FALSE', 'FALSE')
     infographic.configure(background='white')
-    canvas = tk.Canvas(infographic, width = 550, height = yaxis, bd = 0, highlightthickness = 0)
+    canvas = tk.Canvas(infographic, width = xaxis, height = yaxis, bd = 0, highlightthickness = 0)
     canvas.pack()
 
     bglink = bgEntry.get()
@@ -113,7 +119,7 @@ def genInfographic():
         urllib.request.urlretrieve(bglink, imagePath + '\\bg.png')
         bgpath = imagePath + '\\bg.png'
         bgResize = Image.open(bgpath)
-        bgResize = bgResize.resize((550, yaxis), Image.ANTIALIAS)
+        bgResize = bgResize.resize((xaxis, yaxis), Image.ANTIALIAS)
         bgImage = ImageTk.PhotoImage(bgResize)
         canvas.create_image(0, 0, image = bgImage, anchor = 'nw')
     except:
@@ -160,8 +166,8 @@ def genInfographic():
         x = 5
         y+= 50
 
-    canvas.create_text(444, y-1, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
-    canvas.create_text(445, y, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
+    canvas.create_text(xaxis-1, y-1, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
+    canvas.create_text(xaxis, y, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
 
     clearImagePath()
 
