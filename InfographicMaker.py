@@ -94,11 +94,11 @@ def genInfographic():
         return
 
     if max(dungeonLengths) <= 20:
-        xaxis = 475
+        xaxis = 410
     else:
         xaxis = 60 + round((max(dungeonLengths) * 18))
 
-    yaxis = (length * 60) + (rows * 40) + 5
+    yaxis = (length * 60) + (rows * 40) + 15
 
     infographic = tk.Toplevel()
     infographic.geometry('{}x{}'.format(xaxis, yaxis))
@@ -166,8 +166,8 @@ def genInfographic():
         x = 5
         y+= 50
 
-    canvas.create_text(xaxis-1, y-1, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
-    canvas.create_text(xaxis, y, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
+    canvas.create_text(4, yaxis-1, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
+    canvas.create_text(5, yaxis, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
 
     clearImagePath()
 
