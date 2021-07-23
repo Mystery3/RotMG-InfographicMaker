@@ -24,6 +24,7 @@ def clearImagePath():
 def errorMessage(e):
     errorWindow = tk.Toplevel()
     errorWindow.geometry('700x100')
+    errorWindow.resizable('FALSE', 'FALSE')
     
     clearImagePath()
 
@@ -35,6 +36,7 @@ def errorMessage(e):
 def itemError(e):
     itemErrorWindow = tk.Toplevel()
     itemErrorWindow.geometry('700x100')
+    itemErrorWindow.resizable('FALSE', 'FALSE')
 
     clearImagePath()
 
@@ -44,39 +46,57 @@ def itemError(e):
     itemErrorText.pack()
 
 def instructions():
-    pass
+    instructions = tk.Toplevel()
+    instructions.geometry('1010x225')
+    instructions.resizable('FALSE', 'FALSE')
+
+    clearImagePath()
+
+    itemErrorText = tk.Text(instructions, font = ('Helvetica', '15', 'bold'), width = 100)
+    itemErrorText.insert('insert', "1. Make sure you are running this as an admin since a folder must be created for the images to be held in.\n2. Choose a dungeon with the drop-down menu.\n3. Input a background link where prompted, or leave it blank for a white background.\n    Example link: https://i.imgur.com/DhieaMn.png\n4. Type or paste the name of each item that you want displayed. Spelling counts, if you\n    can't figure out the correct spelling, see https://www.tinyurl.com/7b7bs4c for a list of all valid keys.\n5. The '+' amd '-' buttons alter the amount of infographic generated. You can have up to 3 at once, though\n    processing time increases with each one.\n6. Once all items are inputted and all desired fields are fulfilled, press 'Go!' to generate the infographic.")
+    itemErrorText['state'] = 'disabled'
+    itemErrorText.pack()
 
 def genInfographic():
+    if startTexts[0].get('1.0', 'end') == "Press 'Go!' for instructions.\n":
+        instructions()
+        return
+
     dungeonList, dungeonLinkList, itemLists = [], [], []
     length = len(dungeonChoices)
     rows, x, y = 0, 5, 5
 
-    for i in range(length):
-        dungeonList.append(dungeonOptions[i].get())
+    try:
+        for i in range(length):
+            dungeonList.append(dungeonOptions[i].get())
 
-        dungeonLinkList.append(dungeons[dungeonOptions[i].get()])
-        
-        itemList = []
-        item = ''
-        text = startTexts[i].get('1.0', 'end')
+            dungeonLinkList.append(dungeons[dungeonOptions[i].get()])
+            
+            itemList = []
+            item = ''
+            text = startTexts[i].get('1.0', 'end')
 
-        for i in text:
-            if i == '\n':
-                itemList.append(item)
-                item = ''
-                continue
-            else:
-                item = item + i
-        
-        itemLists.append(itemList)
+            for i in text:
+                if i == '\n':
+                    itemList.append(item)
+                    item = ''
+                    continue
+                else:
+                    item = item + i
+            
+            itemLists.append(itemList)
 
-    for i in itemLists:
-        rows = rows + ceil(len(i) / 10)
+        for i in itemLists:
+            rows = rows + ceil(len(i) / 10)
+    except Exception as e:
+        errorMessage(e)
+        return
 
     yaxis = (length * 60) + (rows * 40) + 5
 
     infographic = tk.Toplevel()
     infographic.geometry('550x{}'.format(yaxis))
+    infographic.resizable('FALSE', 'FALSE')
     infographic.configure(background='white')
     canvas = tk.Canvas(infographic, width = 550, height = yaxis, bd = 0, highlightthickness = 0)
     canvas.pack()
@@ -116,7 +136,6 @@ def genInfographic():
         x-= 60
         y+= 38
         pathname = str(i)
-        images = []
         xChangeCount = 0
         for j in range(len(itemLists[i])):
             try:
@@ -125,29 +144,26 @@ def genInfographic():
                 itemImage = ImageTk.PhotoImage(itemResize.resize((40, 40), Image.ANTIALIAS))
                 garbageLabel = tk.Label(frame, image = itemImage) #workaround for tkinter
                 garbageLabel.image = itemImage #workaround
-                images.append(itemImage)
-                pathname = pathname + '0'
+                canvas.create_image(x, y, image = itemImage, anchor = 'nw')
+                if xChangeCount != 9:
+                    x+= 40
+                    xChangeCount+= 1
+                else:
+                    x-= 360
+                    y+= 40
+                    xChangeCount = 0
+                    pathname = pathname + '0'
 
             except Exception as e:
                 itemError(e)
                 break
-
-        for j in images:
-            canvas.create_image(x, y, image = j, anchor = 'nw')
-            if xChangeCount != 9:
-                x+= 40
-                xChangeCount+= 1
-            else:
-                x-= 360
-                y+= 40
-                xChangeCount = 0
         x = 5
         y+= 50
 
     canvas.create_text(444, y-1, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
     canvas.create_text(445, y, anchor = 'se', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
 
-    shutil.rmtree(imagePath)
+    clearImagePath()
 
     infographic.mainloop()
 
@@ -178,7 +194,7 @@ def addGraphic():
     manageWindow()
 
 def manageWindow():
-    window.geometry('{}x740'.format(len(dungeonOptions)*615) + '-25-150')
+    window.geometry('{}x740'.format(len(dungeonOptions)*615) + '+25-150')
     
     length = len(dungeonOptions)
 
@@ -186,9 +202,9 @@ def manageWindow():
         dungeonChoices[i].grid(column = i*2, row = 1, padx = 50, sticky = 'nsw', pady = 20, columnspan = 2)
         startTexts[i].grid(column = i*2, row = 2, ipadx = 1, padx = 25, sticky = 'nsew', ipady = 100, columnspan = 2)
 
-    startButton.grid(column = 2*(length-1), row = 3, pady = 20, columnspan = 2)
-    addButton.grid(column = 2*(length-1), row = 3)
-    remButton.grid(column = 2*length-1, row = 3)
+    startButton.grid(column = 0, row = 3, pady = 20, columnspan = 2, sticky = 'w', padx = 275)
+    addButton.grid(column = 0, row = 3)
+    remButton.grid(column = 1, row = 3, sticky = 'e', padx = 100)
 
     if length == 1:
         remButton.grid_remove()
@@ -215,47 +231,7 @@ bgEntry.insert('end', 'BG Link (empty for white)')
 bgEntry.grid(column = 1, row = 1, padx = 50, sticky = 'nsew', pady = 20)
 
 addGraphic()
+startTexts[0].insert('1.0', "Press 'Go!' for instructions." )
+window.protocol("WM_DELETE_WINDOW", clearImagePath())
+window.resizable('FALSE', 'FALSE')
 window.mainloop()
-
-'''
---------------------------------
-Example Input:
-Davy Jones' Locker
-BG Link: https://i.imgur.com/DhieaMn.png
-Adventurer’s Belt
-Amaranth Nildrop
-Archer Mystery Skin
-Azure Nildrop
-Backpack
-Beach Assassin Skin
-Captain’s Ring
-Davy’s Key
-Ghostly Prism
-Grapes of Wrath
-Hula Mystic Skin
-Lil’ Davy Pet Skin
-Loot Drop Potion
-Loot Tier Potion
-Lucky Clover
-Mini Ghost Ship Pet Skin
-Mystery Cloth (Large)
-Mystery Cloth (Small)
-Mystery Dye (Accessory)
-Mystery Dye (Clothing)
-Mystery Stat Pot
-Naval Uniform
-Potion of Attack (SB)
-Potion of Max Level
-Potion of Wisdom (SB)
-Power Pizza
-Quiver of Shrieking Specters
-Revenant Ring
-Shard of the Intern x1
-Spectral Cloth Armor
-Spirit Dagger
-Strawberry Milkshake
-Swashbuckler’s Sickle
-Swimsuit Ninja Skin
-Wine Cellar Incantation
---------------------------------
-'''
