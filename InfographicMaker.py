@@ -62,9 +62,10 @@ def genInfographic():
         instructions()
         return
 
-    dungeonList, dungeonLengths, dungeonLinkList, itemLists = [], [], [], []
+    dungeonList, dungeonLengths, dungeonLinkList, itemLists, exceptions = [], [], [], [], []
     length = len(dungeonChoices)
     rows, x, y = 0, 5, 5
+    isException = False
 
     try:
         for i in range(length):
@@ -161,13 +162,20 @@ def genInfographic():
                     pathname = pathname + '0'
 
             except Exception as e:
-                itemError(e)
-                break
+                isException = True
+                exceptions.append(itemLists[i][j])
+                continue
         x = 5
         y+= 50
 
-    canvas.create_text(4, yaxis-1, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
-    canvas.create_text(5, yaxis, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
+    if isException:
+        itemErrorText = ''
+        for i in exceptions:
+            itemErrorText = itemErrorText + i + ', '
+        itemError(itemErrorText)
+
+    canvas.create_text(9, yaxis-1, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
+    canvas.create_text(10, yaxis, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
 
     clearImagePath()
 
