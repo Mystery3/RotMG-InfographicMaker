@@ -2,7 +2,8 @@
 import tkinter as tk
 import urllib.request
 import os, shutil
-from PIL import ImageTk, Image
+from tkinter import filedialog
+from PIL import Image, ImageFont, ImageDraw
 from math import ceil
 
 '''
@@ -15,18 +16,10 @@ items = {'Steel Dagger': '//i.imgur.com/xXg5UIl.png', 'Short Bow': '//i.imgur.co
 
 dungeons = {'Pirate Cave': '//i.imgur.com/OqzVQuc.png', 'Forest Maze': '//static.drips.pw/rotmg/wiki/Environment/Portals/Forest%20Maze%20Portal.png', 'Spider Den': '//i.imgur.com/up93OlG.png', 'Snake Pit': '//i.imgur.com/lHeUeoK.png', 'Forbidden Jungle': '//static.drips.pw/rotmg/wiki/Environment/Portals/Forbidden%20Jungle%20Portal.png', 'The Hive': '//static.drips.pw/rotmg/wiki/Environment/Portals/The%20Hive%20Portal.png', 'Magic Woods': '//i.imgur.com/mvUTUNo.png', 'Sprite World': '//i.imgur.com/LO1AmVL.png', 'Candyland Hunting Grounds': '//static.drips.pw/rotmg/wiki/Environment/Portals/Candyland%20Portal.png', 'Ancient Ruins': '//i.imgur.com/d7MSK2x.png', 'Cave of a Thousand Treasures': '//static.drips.pw/rotmg/wiki/Environment/Portals/Treasure%20Cave%20Portal.png', 'Undead Lair': '//i.imgur.com/pR8Dgth.png', 'Abyss of Demons': '//i.imgur.com/1NziBak.png', 'Manor of the Immortals': '//static.drips.pw/rotmg/wiki/Environment/Portals/Manor%20of%20the%20Immortals%20Portal.png', "Puppet Master's Theatre": '//i.imgur.com/2JZNslO.png', 'Toxic Sewers': '//i.imgur.com/4c03WNV.png', 'Cursed Library': '//i.imgur.com/Kcb7YfX.png', 'Haunted Cemetery': '//i.imgur.com/n5HqTlm.png', 'The Machine': '//i.imgur.com/eFihsCs.png', 'The Inner Workings': '//i.imgur.com/6RdEOw1.png', 'Mad Lab': '//i.imgur.com/eJNrKaO.png', 'Deadwater Docks': '//i.imgur.com/CjceJZ1.png', 'Woodland Labyrinth': '//i.imgur.com/4dn3rcG.png', 'The Crawling Depths': '//i.imgur.com/UfTq4bg.png', 'Parasite Chambers': '//i.imgur.com/xldgpdz.png', 'Beachzone': '//static.drips.pw/rotmg/wiki/Environment/Portals/Beachzone%20Portal.png', 'The Third Dimension': '//i.imgur.com/qlPofut.png', "Davy Jones' Locker": '//i.imgur.com/xpDdz03.png', 'Mountain Temple': '//i.imgur.com/SY0Jtnp.png', 'Lair of Draconis': '//static.drips.pw/rotmg/wiki/Environment/Portals/Consolation%20of%20Draconis%20Portal.png', 'Ocean Trench': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ocean%20Trench%20Portal.png', 'Ice Cave': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ice%20Cave%20Portal.png', 'Tomb of the Ancients': '//static.drips.pw/rotmg/wiki/Environment/Portals/Tomb%20of%20the%20Ancients%20Portal.png', 'Fungal Cavern': '//i.imgur.com/OElJTuL.png', 'Crystal Cavern': '//i.imgur.com/BHwk26f.png', 'The Nest': '//i.imgur.com/WQ95Y0j.png', 'The Shatters': '//static.drips.pw/rotmg/wiki/Environment/Portals/The%20Shatters.png', 'Lost Halls': '//i.imgur.com/uhDj0M5.png', 'Cultist Hideout': '//i.imgur.com/Xa9mjsG.png', 'The Void': '//i.imgur.com/TNZ8fOw.png', 'Malogia': '//i.imgur.com/JaSkGXC.png', 'Untaris': '//i.imgur.com/rlkbOzV.png', 'Forax': '//i.imgur.com/j2CMfTA.png', 'Katalund': '//i.imgur.com/YDfY8FU.png', "Oryx's Chamber": '//i.imgur.com/8KBE64D.png', 'Wine Cellar': '//i.imgur.com/ozNWFFN.png', 'Janus the Doorwarden': '//i.imgur.com/ZfIKmgX.png', "Oryx's Sanctuary": '//i.imgur.com/NRwP3hq.png', 'Lair of Shaitan': '//static.drips.pw/rotmg/wiki/Environment/Portals/Lair%20of%20Shaitan%20Portal.png', "Puppet Master's Encore": '//static.drips.pw/rotmg/wiki/Environment/Portals/Puppet%20Encore%20Portal.png', 'Cnidarian Reef': '//i.imgur.com/qjd04By.png', 'Secluded Thicket': '//i.imgur.com/8vEAT8t.png', 'High Tech Terror': '//i.imgur.com/Y9LAhlJ.png', 'Heroic Undead Lair': '//i.imgur.com/31NX1Ld.png', 'Heroic Abyss of Demons': '//i.imgur.com/zz6D2lz.png', 'Battle for the Nexus': '//static.drips.pw/rotmg/wiki/Environment/Portals/Battle%20Nexus%20Portal.png', "Belladonna's Garden": '//i.imgur.com/VTXGPSy.png', 'Ice Tomb': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ice%20Tomb%20Portal.png', 'Rainbow Road': '//static.drips.pw/rotmg/wiki/Environment/Portals/Rainbow%20Road.png', "Santa's Workshop": '//i.imgur.com/U7uy7oD.png', 'Mad God Mayhem': '//i.imgur.com/yRv9Dve.png', 'Tutorial': '//static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Portal.png', "Oryx's Kitchen": '//static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Portal.png'}
 
-def clearImagePath():
-    try:
-        shutil.rmtree(imagePath)
-    except:
-        pass
-
 def errorMessage(e):
     errorWindow = tk.Toplevel()
     errorWindow.geometry('700x100')
     errorWindow.resizable('FALSE', 'FALSE')
-    
-    clearImagePath()
 
     errorText = tk.Text(errorWindow, font = ('Helvetica', '15', 'bold'), width = 64)
     errorText.insert('insert', 'Error at: {}'.format(e))
@@ -38,22 +31,18 @@ def itemError(e):
     itemErrorWindow.geometry('700x100')
     itemErrorWindow.resizable('FALSE', 'FALSE')
 
-    clearImagePath()
-
     itemErrorText = tk.Text(itemErrorWindow, font = ('Helvetica', '15', 'bold'), width = 64)
-    itemErrorText.insert('insert', 'Item error at: {}'.format(e) + '\nTo see all valid item keys go to https://www.tinyurl.com/7b7bs4c')
+    itemErrorText.insert('insert', 'Item error at: {}'.format(e) + '\nItem(s) are missing! Image not saved. To see all valid item keys go to\nhttps://www.tinyurl.com/7b7bs4c')
     itemErrorText['state'] = 'disabled'
     itemErrorText.pack()
 
 def instructions():
     instructions = tk.Toplevel()
-    instructions.geometry('1010x225')
+    instructions.geometry('1010x250')
     instructions.resizable('FALSE', 'FALSE')
 
-    clearImagePath()
-
     itemErrorText = tk.Text(instructions, font = ('Helvetica', '15', 'bold'), width = 100)
-    itemErrorText.insert('insert', "1. Make sure you are running this as an admin since a folder must be created for the images to be held in.\n2. Choose a dungeon with the drop-down menu.\n3. Input a background link where prompted, or leave it blank for a white background.\n    Example link: https://i.imgur.com/DhieaMn.png\n4. Type or paste the name of each item that you want displayed. Spelling counts, if you\n    can't figure out the correct spelling, see https://www.tinyurl.com/7b7bs4c for a list of all valid keys.\n5. The '+' amd '-' buttons alter the amount of infographic generated. You can have up to 3 at once, though\n    processing time increases with each one.\n6. Once all items are inputted and all desired fields are fulfilled, press 'Go!' to generate the infographic.")
+    itemErrorText.insert('insert', "1. Make sure you are running this as an admin since a folder must be created for the images to be held in.\n2. Choose a dungeon with the drop-down menu.\n3. Input a background link where prompted, or leave it blank for an empty background.\n    Example link: https://i.imgur.com/DhieaMn.png\n4. Type or paste the name of each item that you want displayed. Spelling counts, if you\n    can't figure out the correct spelling, see https://www.tinyurl.com/7b7bs4c for a list of all valid keys.\n5. The '+' amd '-' buttons alter the amount of infographic generated. You can have up to 3 at once, though\n    processing time increases with each one.\n6. Once all items are inputted and all desired fields are fulfilled, press 'Go!' to choose a folder to save to\n    and generate the infographic.")
     itemErrorText['state'] = 'disabled'
     itemErrorText.pack()
 
@@ -62,10 +51,19 @@ def genInfographic():
         instructions()
         return
 
-    dungeonList, dungeonLengths, dungeonLinkList, itemLists, exceptions = [], [], [], [], []
+    finalPath = filedialog.asksaveasfilename() + '.png'
+    imagePath = finalPath.rpartition('/')[0] + '/RealmInfographicTEMPimages'
+
+    if finalPath != '.png':
+        os.mkdir(imagePath)
+    else:
+        errorMessage('Invalid file path.')
+        return
+
+    dungeonList, dungeonLengths, dungeonLinkList, itemLists, missing = [], [], [], [], []
     length = len(dungeonChoices)
-    rows, x, y = 0, 5, 5
-    isException = False
+    rows, x, y = 0, 0, 0
+    isMissing = False
 
     try:
         for i in range(length):
@@ -92,66 +90,50 @@ def genInfographic():
             rows = rows + ceil(len(i) / 10)
     except Exception as e:
         errorMessage(e)
+        shutil.rmtree(imagePath)
         return
 
-    if max(dungeonLengths) <= 20:
-        xaxis = 410
+    if max(dungeonLengths) <= 200:
+        xaxis = 400
     else:
         xaxis = 60 + round((max(dungeonLengths) * 18))
 
     yaxis = (length * 60) + (rows * 40) + 15
 
-    infographic = tk.Toplevel()
-    infographic.geometry('{}x{}'.format(xaxis, yaxis))
-    infographic.resizable('FALSE', 'FALSE')
-    infographic.configure(background='white')
-    canvas = tk.Canvas(infographic, width = xaxis, height = yaxis, bd = 0, highlightthickness = 0)
-    canvas.pack()
+    source = Image.new('RGBA', (xaxis, yaxis), (255, 255, 255, 0))
+    draw = ImageDraw.Draw(source)
 
     bglink = bgEntry.get()
-
-    try:
-        os.mkdir(imagePath)
-    except:
-        clearImagePath()
-        os.mkdir(imagePath)
 
     try: 
         urllib.request.urlretrieve(bglink, imagePath + '\\bg.png')
         bgpath = imagePath + '\\bg.png'
-        bgResize = Image.open(bgpath)
-        bgResize = bgResize.resize((xaxis, yaxis), Image.ANTIALIAS)
-        bgImage = ImageTk.PhotoImage(bgResize)
-        canvas.create_image(0, 0, image = bgImage, anchor = 'nw')
+        bg = Image.open(bgpath).resize((xaxis, yaxis), Image.ANTIALIAS)
+        source.alpha_composite(bg, (0, 0))
     except:
         pass
-        
+
     for i in range(length):
         dungeonpath = imagePath + '\\dungeon' + str(i) + '.png'
         urllib.request.urlretrieve('https:' + dungeonLinkList[i], dungeonpath)
-        dungeonResize = Image.open(dungeonpath)
-        dungeonImage = ImageTk.PhotoImage(dungeonResize.resize((52, 52), Image.ANTIALIAS))
-        garbageLabel = tk.Label(frame, image = dungeonImage) #workaround for tkinter
-        garbageLabel.image = dungeonImage #workaround
-        canvas.create_image(x, y, image = dungeonImage, anchor = 'nw')
+        dungeonImage = Image.open(dungeonpath).resize((56, 56), Image.ANTIALIAS)
+        source.alpha_composite(dungeonImage, (x, y))
 
         x+= 60
-        y+= 12
-        canvas.create_text(x, y, font = ('Chronotype', '30', 'bold'), text = dungeonList[i], anchor = 'nw', fill = 'gray')
-        canvas.create_text(x+1, y+2, font = ('Chronotype', '30', 'bold'), text = dungeonList[i], anchor = 'nw')
+        y+= 17
+        
+        draw.text((x, y), dungeonList[i], (192, 192, 192, 255), chronotype)
 
         x-= 60
-        y+= 38
+        y+= 43
         pathname = str(i)
         xChangeCount = 0
         for j in range(len(itemLists[i])):
             try:
                 urllib.request.urlretrieve('https:' + items[itemLists[i][j]], imagePath + '\\' + pathname + '.png')
-                itemResize = Image.open(imagePath + '\\' + pathname + '.png')
-                itemImage = ImageTk.PhotoImage(itemResize.resize((40, 40), Image.ANTIALIAS))
-                garbageLabel = tk.Label(frame, image = itemImage) #workaround for tkinter
-                garbageLabel.image = itemImage #workaround
-                canvas.create_image(x, y, image = itemImage, anchor = 'nw')
+                itemImage = Image.open(imagePath + '\\' + pathname + '.png').resize((40, 40), Image.ANTIALIAS)
+                source.alpha_composite(itemImage, (x, y))
+
                 if xChangeCount != 9:
                     x+= 40
                     xChangeCount+= 1
@@ -162,24 +144,24 @@ def genInfographic():
                     pathname = pathname + '0'
 
             except Exception as e:
-                isException = True
-                exceptions.append(itemLists[i][j])
+                isMissing = True
+                missing.append(itemLists[i][j])
                 continue
         x = 5
         y+= 50
 
-    if isException:
+    shutil.rmtree(imagePath)
+
+    draw.text((297, yaxis-12), 'Made by Flaps#9562', (192, 192, 192, 255), smallChronotype)
+
+    if isMissing:
         itemErrorText = ''
-        for i in exceptions:
+        for i in missing:
             itemErrorText = itemErrorText + i + ', '
         itemError(itemErrorText)
+        return
 
-    canvas.create_text(9, yaxis-1, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562', fill = 'gray')
-    canvas.create_text(10, yaxis, anchor = 'sw', font = ('Chronotype', '15'), text = 'Made by Flaps#9562')
-
-    clearImagePath()
-
-    infographic.mainloop()
+    source.save(finalPath, 'PNG')
 
 def remGraphic():
     index = len(dungeonOptions) - 1
@@ -227,13 +209,14 @@ def manageWindow():
 
     frame.grid(row = 1, column = 1)
 
-imagePath = os.getcwd() + '\\RealmInfographicTEMPimages'
+chronotype = ImageFont.truetype(os.path.dirname(os.path.realpath(__file__)) + '\calibrib.ttf', 26)
+smallChronotype = ImageFont.truetype(os.path.dirname(os.path.realpath(__file__)) + '\calibrib.ttf', 12)
+
 dungeonNames = sorted(dungeons.keys())
 dungeonChoices, dungeonOptions, startTexts = [], [], []
 
 window = tk.Tk()
 window.title('Infographic')
-window.configure(background = 'white')
 
 frame = tk.Frame(window)
 startButton = tk.Button(frame, text = 'Go!', command = genInfographic, bg = 'sky blue', width = 5)
@@ -241,11 +224,10 @@ addButton = tk.Button(frame, text = '+', command = addGraphic, bg = 'sky blue', 
 remButton = tk.Button(frame, text = '-', command = remGraphic, bg = 'sky blue', width = 3)
 
 bgEntry = tk.Entry(frame, font = ('Helvetica', '10'))
-bgEntry.insert('end', 'BG Link (empty for white)')
+bgEntry.insert('end', 'BG Link (empty for transparent)')
 bgEntry.grid(column = 1, row = 1, padx = 50, sticky = 'nsew', pady = 20)
 
 addGraphic()
 startTexts[0].insert('1.0', "Press 'Go!' for instructions." )
-window.protocol("WM_DELETE_WINDOW", clearImagePath())
 window.resizable('FALSE', 'FALSE')
 window.mainloop()
