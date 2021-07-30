@@ -1,6 +1,6 @@
 # encoding: utf-8
 import tkinter as tk
-import os, shutil, requests
+import os, requests
 from tkinter import filedialog
 from PIL import Image, ImageFont, ImageDraw
 from math import ceil
