@@ -1,6 +1,7 @@
 # encoding: utf-8
 import tkinter as tk
-import os, shutil, requests
+import os, requests
+from ttkwidgets import autocomplete
 from tkinter import filedialog
 from PIL import Image, ImageFont, ImageDraw
 from math import ceil
@@ -176,11 +177,8 @@ def remGraphic():
     manageWindow()
 
 def addGraphic():
-    dungeonOption = tk.StringVar(frame)
-    dungeonOption.set('Choose a Dungeon')
-    dungeonOptions.append(dungeonOption)
-
-    dungeonChoice = tk.OptionMenu(frame, dungeonOption, *dungeonNames)
+    dungeonChoice = autocomplete.AutocompleteCombobox(frame, completevalues = dungeonNames)
+    dungeonChoice.set('Choose a Dungeon')
     dungeonChoices.append(dungeonChoice)
 
     startText = tk.Text(frame, font = ('Helvetica', '10'), height = 25)
@@ -189,9 +187,9 @@ def addGraphic():
     manageWindow()
 
 def manageWindow():
-    window.geometry('{}x740'.format(len(dungeonOptions)*615))
+    window.geometry('{}x740'.format(len(dungeonChoices)*615))
     
-    length = len(dungeonOptions)
+    length = len(dungeonChoices)
 
     for i in range(length):
         dungeonChoices[i].grid(column = i*2, row = 1, padx = 50, sticky = 'nsw', pady = 20, columnspan = 2)
