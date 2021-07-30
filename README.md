@@ -1,2 +1,3 @@
 # RotMG-InfographicMaker
-FONT FILE (in .rar) MUST BE IN THE SAME FOLDER AS APPLICATION.
+Font file (in .rar) must be in the same folder as application.
+Make sure "File name extensions" is checked in your file explorer.
