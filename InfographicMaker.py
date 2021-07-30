@@ -1,6 +1,6 @@
 # encoding: utf-8
 import tkinter as tk
-import os, requests
+import os, shutil, requests
 from tkinter import filedialog
 from PIL import Image, ImageFont, ImageDraw
 from math import ceil
@@ -155,12 +155,12 @@ def genInfographic():
             itemErrorText = itemErrorText + i + ', '
         itemError(itemErrorText)
 
-    finalPath = filedialog.asksaveasfilename(confirmoverwrite = True, initialdir = os.path.dirname(os.path.realpath(__file__)), initialfile = 'infographic.png', filetypes = [('PNG', '*.png')])
+    finalPath = filedialog.asksaveasfilename(confirmoverwrite = True, initialdir = os.path.dirname(os.path.realpath(__file__)), initialfile = 'infographic.png', filetypes = [('All Files', '*.*')])
     if finalPath == '':
         errorMessage('Invalid file path.')
         return
 
-    source.save(finalPath + '.png', 'PNG')
+    source.save(finalPath, 'PNG')
 
 def remGraphic():
     index = len(dungeonOptions) - 1
