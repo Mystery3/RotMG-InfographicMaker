@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter.ttk import *
 import os, requests
 from ttkwidgets import autocomplete
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from PIL import Image, ImageFont, ImageDraw
 from math import ceil
 
@@ -18,34 +18,13 @@ items = {'Steel Dagger': '//i.imgur.com/xXg5UIl.png', 'Short Bow': '//i.imgur.co
 dungeons = {'Pirate Cave': '//i.imgur.com/OqzVQuc.png', 'Forest Maze': '//static.drips.pw/rotmg/wiki/Environment/Portals/Forest%20Maze%20Portal.png', 'Spider Den': '//i.imgur.com/up93OlG.png', 'Snake Pit': '//i.imgur.com/lHeUeoK.png', 'Forbidden Jungle': '//static.drips.pw/rotmg/wiki/Environment/Portals/Forbidden%20Jungle%20Portal.png', 'The Hive': '//static.drips.pw/rotmg/wiki/Environment/Portals/The%20Hive%20Portal.png', 'Magic Woods': '//i.imgur.com/mvUTUNo.png', 'Sprite World': '//i.imgur.com/LO1AmVL.png', 'Candyland Hunting Grounds': '//static.drips.pw/rotmg/wiki/Environment/Portals/Candyland%20Portal.png', 'Ancient Ruins': '//i.imgur.com/d7MSK2x.png', 'Cave of a Thousand Treasures': '//static.drips.pw/rotmg/wiki/Environment/Portals/Treasure%20Cave%20Portal.png', 'Undead Lair': '//i.imgur.com/pR8Dgth.png', 'Abyss of Demons': '//i.imgur.com/1NziBak.png', 'Manor of the Immortals': '//static.drips.pw/rotmg/wiki/Environment/Portals/Manor%20of%20the%20Immortals%20Portal.png', "Puppet Master's Theatre": '//i.imgur.com/2JZNslO.png', 'Toxic Sewers': '//i.imgur.com/4c03WNV.png', 'Cursed Library': '//i.imgur.com/Kcb7YfX.png', 'Haunted Cemetery': '//i.imgur.com/n5HqTlm.png', 'The Machine': '//i.imgur.com/eFihsCs.png', 'The Inner Workings': '//i.imgur.com/6RdEOw1.png', 'Mad Lab': '//i.imgur.com/eJNrKaO.png', 'Deadwater Docks': '//i.imgur.com/CjceJZ1.png', 'Woodland Labyrinth': '//i.imgur.com/4dn3rcG.png', 'The Crawling Depths': '//i.imgur.com/UfTq4bg.png', 'Parasite Chambers': '//i.imgur.com/xldgpdz.png', 'Beachzone': '//static.drips.pw/rotmg/wiki/Environment/Portals/Beachzone%20Portal.png', 'The Third Dimension': '//i.imgur.com/qlPofut.png', "Davy Jones' Locker": '//i.imgur.com/xpDdz03.png', 'Mountain Temple': '//i.imgur.com/SY0Jtnp.png', 'Lair of Draconis': '//static.drips.pw/rotmg/wiki/Environment/Portals/Consolation%20of%20Draconis%20Portal.png', 'Ocean Trench': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ocean%20Trench%20Portal.png', 'Ice Cave': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ice%20Cave%20Portal.png', 'Tomb of the Ancients': '//static.drips.pw/rotmg/wiki/Environment/Portals/Tomb%20of%20the%20Ancients%20Portal.png', 'Fungal Cavern': '//i.imgur.com/OElJTuL.png', 'Crystal Cavern': '//i.imgur.com/BHwk26f.png', 'The Nest': '//i.imgur.com/WQ95Y0j.png', 'The Shatters': '//static.drips.pw/rotmg/wiki/Environment/Portals/The%20Shatters.png', 'Lost Halls': '//i.imgur.com/uhDj0M5.png', 'Cultist Hideout': '//i.imgur.com/fg2BtCm.png', 'The Void': '//i.imgur.com/TNZ8fOw.png', 'Malogia': '//i.imgur.com/JaSkGXC.png', 'Untaris': '//i.imgur.com/rlkbOzV.png', 'Forax': '//i.imgur.com/j2CMfTA.png', 'Katalund': '//i.imgur.com/YDfY8FU.png', "Oryx's Chamber": '//i.imgur.com/8KBE64D.png', 'Wine Cellar': '//i.imgur.com/ozNWFFN.png', 'Janus the Doorwarden': '//i.imgur.com/ZfIKmgX.png', "Oryx's Sanctuary": '//i.imgur.com/NRwP3hq.png', 'Lair of Shaitan': '//static.drips.pw/rotmg/wiki/Environment/Portals/Lair%20of%20Shaitan%20Portal.png', "Puppet Master's Encore": '//static.drips.pw/rotmg/wiki/Environment/Portals/Puppet%20Encore%20Portal.png', 'Cnidarian Reef': '//i.imgur.com/qjd04By.png', 'Secluded Thicket': '//i.imgur.com/8vEAT8t.png', 'High Tech Terror': '//i.imgur.com/Y9LAhlJ.png', 'Heroic Undead Lair': '//i.imgur.com/31NX1Ld.png', 'Heroic Abyss of Demons': '//i.imgur.com/zz6D2lz.png', 'Battle for the Nexus': '//static.drips.pw/rotmg/wiki/Environment/Portals/Battle%20Nexus%20Portal.png', "Belladonna's Garden": '//i.imgur.com/VTXGPSy.png', 'Ice Tomb': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ice%20Tomb%20Portal.png', 'Rainbow Road': '//static.drips.pw/rotmg/wiki/Environment/Portals/Rainbow%20Road.png', "Santa's Workshop": '//i.imgur.com/U7uy7oD.png', 'Mad God Mayhem': '//i.imgur.com/yRv9Dve.png', 'Tutorial': '//static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Portal.png', "Oryx's Kitchen": '//static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Portal.png', 'The Realm': '//static.drips.pw/rotmg/wiki/Environment/Portals/Nexus%20Portal.png', '': '//upload.wikimedia.org/wikipedia/commons/8/89/HD_transparent_picture.png'}
 
 def errorMessage(e):
-    errorWindow = Toplevel()
-    errorWindow.geometry('700x100')
-    errorWindow.resizable('FALSE', 'FALSE')
-
-    errorText = Text(errorWindow, font = ('Helvetica', '15', 'bold'), width = 64)
-    errorText.insert('insert', 'Error at: {}'.format(e))
-    errorText['state'] = 'disabled'
-    errorText.pack()
+    messagebox.showerror("Error", e)
 
 def itemError(e):
-    itemErrorWindow = Toplevel()
-    itemErrorWindow.geometry('700x100')
-    itemErrorWindow.resizable('FALSE', 'FALSE')
-
-    itemErrorText = Text(itemErrorWindow, font = ('Helvetica', '15', 'bold'), width = 64)
-    itemErrorText.insert('insert', 'Item error at: {}'.format(e) + '\nItem(s) are missing! To see all valid item keys go to\nhttps://www.tinyurl.com/7b7bs4c')
-    itemErrorText['state'] = 'disabled'
-    itemErrorText.pack()
+    messagebox.showerror("Error", 'Item(s) missing at: ' + e + '\nTo see all valid item keys go to https://www.tinyurl.com/7b7bs4c')
 
 def instructions():
-    instructions = Toplevel()
-    instructions.geometry('1010x250')
-    instructions.resizable('FALSE', 'FALSE')
-
-    itemErrorText = Text(instructions, font = ('Helvetica', '15', 'bold'), width = 100)
-    itemErrorText.insert('insert', "1. Choose a dungeon with the drop-down menu or type it.\n2. Input a background link where prompted, or leave it blank for an empty background.\n    Example link: https://i.imgur.com/DhieaMn.png\n3. Type or paste the name of each item that you want displayed. Spelling counts, if you\n    can't figure out the correct spelling, see https://www.tinyurl.com/7b7bs4c for a list of all valid keys.\n4. The '+' amd '-' buttons alter the amount of infographic generated. You can have up to 3 at once, though\n    processing time increases with each one.\n5. Once all items are inputted and all desired fields are fulfilled, press 'Go!' to choose a folder to save to\n    and generate the infographic.")
-    itemErrorText['state'] = 'disabled'
-    itemErrorText.pack()
+    messagebox.showinfo('Instructions',"1. Choose a dungeon with the drop-down menu or type it.\n2. Input a background link where prompted, or leave it blank\n    for an empty background.\n    Example link: https://i.imgur.com/DhieaMn.png\n3. Type or paste the name of each item that you want\n    displayed. Spelling counts, if you can't figure out the\n    correct spelling, see https://www.tinyurl.com/7b7bs4c for a\n    list of all valid keys.\n4. The '+' amd '-' buttons alter the amount of infographics\n    generated. You can have up to 3 at once.\n5. Once all items are inputted and all desired fields are\n    fulfilled, press 'Go!' to choose a folder to save to and\n    generate the infographic.")
 
 def genInfographic():
     if startTexts[0].get('1.0', 'end') == "Press 'Go!' for instructions.\n":
@@ -90,7 +69,7 @@ def genInfographic():
     bglink = bgEntry.get()
 
     try: 
-        bg = Image.open(requests.get(bglink, stream=True).raw).resize((xaxis, yaxis), Image.ANTIALIAS).convert('RGBA')
+        bg = Image.open(requests.get(bglink, stream=True).raw).resize((xaxis, yaxis), resample = Image.BOX).convert('RGBA')
         source.alpha_composite(bg, (0, 0))
     except:
         pass
@@ -99,7 +78,7 @@ def genInfographic():
         dungeonImage = Image.open(requests.get('https:' + dungeonLinkList[i], stream=True).raw).convert('RGBA')
 
         if dungeonImage.size[0] > 60 or dungeonImage.size[1] > 60:
-            dungeonImage = dungeonImage.resize((56, 56), Image.ANTIALIAS)
+            dungeonImage = dungeonImage.resize((56, 56), resample = Image.BOX)
 
         source.alpha_composite(dungeonImage, (x, y))
 
@@ -114,7 +93,7 @@ def genInfographic():
         xChangeCount = 0
         for j in range(len(itemLists[i])):
             try:
-                itemImage = Image.open(requests.get('https:' + items[itemLists[i][j]], stream=True).raw).resize((40, 40), Image.ANTIALIAS).convert('RGBA')
+                itemImage = Image.open(requests.get('https:' + items[itemLists[i][j]], stream=True).raw).resize((40, 40), resample = Image.BOX).convert('RGBA')
                 source.alpha_composite(itemImage, (x, y))
 
                 if xChangeCount != 9:
@@ -173,7 +152,18 @@ def addGraphic():
     dungeonChoice.set('Choose a Dungeon')
     dungeonChoices.append(dungeonChoice)
 
-    startText = Text(frame, font = ('Helvetica', '10'), height = 25, foreground = '#333', borderwidth = 2)
+    startText = Text(frame,
+        font = ('Helvetica', '10'),
+        height = 25, foreground = '#dddddd',
+        borderwidth = 1, relief = 'flat',
+        highlightthickness = 1,
+        highlightbackground = '#252a2d',
+        background = '#131419',
+        highlightcolor = '#6c9cc4',
+        selectbackground = '#4d6f8c',
+        insertbackground = '#dddddd',
+        insertborderwidth = 1
+    )
     startTexts.append(startText)
 
     manageWindow()
@@ -198,39 +188,59 @@ def manageWindow():
     frame.grid(row = 1, column = 1, padx = 25)
     buttonFrame.grid(row = 2, column = 1)
 
-font = ImageFont.truetype(os.path.dirname(os.path.realpath(__file__)) + '\calibrib.ttf', 26)
-smallFont = ImageFont.truetype(os.path.dirname(os.path.realpath(__file__)) + '\calibrib.ttf', 12)
+if __name__ == '__main__':
+    font = ImageFont.truetype(os.path.dirname(os.path.realpath(__file__)) + '\calibrib.ttf', 26)
+    smallFont = ImageFont.truetype(os.path.dirname(os.path.realpath(__file__)) + '\calibrib.ttf', 12)
 
-dungeonNames = sorted(dungeons.keys())
-dungeonChoices, startTexts = [], []
+    dungeonNames = sorted(dungeons.keys())
+    dungeonChoices, startTexts = [], []
 
-window = Tk()
-window.title('Infographic')
-window.configure(background = '#aaa')
+    window = Tk()
+    window.title('Infographic')
+    window.configure(background = '#252a2d', )
+    window.option_add('*TCombobox*Listbox.background', '#131419')
+    window.option_add('*TCombobox*Listbox.foreground', '#dddddd')
+    window.option_add('*TCombobox*Listbox.selectBackground', '#4d6f8c')
 
-style = Style()
-style.theme_use('vista')
-style.configure('.',
-    background = '#aaa',
-    foreground = '#333',
-    fieldbackground = 'white'
-)
-style.configure('TButton',
-    background = 'white'
-)
+    style = Style()
+    style.theme_use('clam')
+    
+    style.configure('.',
+        background = '#252a2d',
+        foreground = '#dddddd',
+        fieldbackground = '#131419',
+        bordercolor = '#252a2d',
+        darkcolor = '#131419',
+        lightcolor = '#252a2d',
+        insertcolor = '#dddddd',
+        borderwidth = 1,
+        arrowcolor = '#dddddd',
+        troughcolor = '#42444e')
 
-frame = Frame(window)
-buttonFrame = Frame(window)
-startButton = Button(buttonFrame, text = 'Go!', command = genInfographic, width = 5)
-startButton.grid(column = 1, row = 0, pady = 20)
-addButton = Button(buttonFrame, text = '+', command = addGraphic, width = 3)
-remButton = Button(buttonFrame, text = '-', command = remGraphic, width = 3)
+    style.configure('TButton',
+        background = '#131419',
+        relief = 'flat')
 
-bgEntry = Entry(frame, font = ('Helvetica', '10'))
-bgEntry.insert('end', 'BG Link (empty for transparent)')
-bgEntry.grid(column = 1, row = 0, sticky = 'e', padx = 25, ipadx = 50)
+    style.configure('TScrollbar',
+        background = '#252a2d',
+        gripcount = 0)
 
-addGraphic()
-startTexts[0].insert('1.0', "Press 'Go!' for instructions." )
-window.resizable('TRUE', 'TRUE')
-window.mainloop()
+    style.map('TScrollbar', background = [('active', '#42444e')])
+    style.map('TCombobox', background = [('pressed', '#42444e')], bordercolor = [('focus', '#6c9cc4')])
+    style.map('TButton', background = [('active', '#42444e')])
+
+    frame = Frame(window)
+    buttonFrame = Frame(window)
+    startButton = Button(buttonFrame, text = 'Go!', command = genInfographic, width = 5)
+    startButton.grid(column = 1, row = 0, pady = 20)
+    addButton = Button(buttonFrame, text = '+', command = addGraphic, width = 3)
+    remButton = Button(buttonFrame, text = '-', command = remGraphic, width = 3)
+
+    bgEntry = Entry(frame, font = ('Helvetica', '10'))
+    bgEntry.insert('end', 'BG Link (empty for transparent)')
+    bgEntry.grid(column = 1, row = 0, sticky = 'e', padx = 25, ipadx = 50)
+
+    addGraphic()
+    startTexts[0].insert('1.0', "Press 'Go!' for instructions." )
+    window.resizable('FALSE', 'FALSE')
+    window.mainloop()
