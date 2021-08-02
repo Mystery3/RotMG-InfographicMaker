@@ -85,8 +85,11 @@ def genInfographic():
 
     #reload dicts in case options have changed
     loadDicts()
+    
+    #rebuild dict if manual mode is on
     if manualSort:
         global itemDict
+        itemDict = {}
         for dictFile in os.listdir(mainPath + '\\Dictionaries'):
             with open(mainPath + '\\Dictionaries\\' + dictFile, 'r', encoding = "utf-8") as f:
                 itemDict = {**itemDict, **(genDict(f.read()))}
@@ -115,7 +118,7 @@ def genInfographic():
 
     #geometry
     xaxis = 400
-    yaxis = (length * 60) + (rows * 40) + 20
+    yaxis = (length * 60) + (rows * 40)# + 20 (was for signature)
 
     #image start
     source = Image.new('RGBA', (xaxis, yaxis), (255, 255, 255, 0))
@@ -208,26 +211,32 @@ def genInfographic():
         y+= 50
 
     #signature
-    #draw.text((297, yaxis-12), 'Made by Flaps#9562', (192, 192, 192, 255), smallFont)
+    #draw.text((297, yaxis-12), 'Made by Flaps#9562', (192, 192, 192, 255), smallFont) (RIP signamature)
 
     #missing handling
     if len(missingSet) > 0:
         itemErrorText = ''
         for i in missingSet:
             itemErrorText = itemErrorText + i + ', '
-        messagebox.showerror("Error", 'Item(s) missing at: ' + itemErrorText + '\n\nTo see all valid item keys go to https://www.tinyurl.com/7b7bs4c')
+        messagebox.showerror("Error", 'Item(s) missing at: ' + itemErrorText + '\n\nTo see all valid item keys see the Dictionaries folder.')
 
     #save dialog
-    finalPath = filedialog.asksaveasfilename(confirmoverwrite = True, initialdir = mainPath, initialfile = 'infographic.png', filetypes = [('PNG', '*.png')])
-    if finalPath == '':
-        messagebox.showwarning("Warning", 'File not saved.')
-        return
+    try:
+        finalPath = filedialog.asksaveasfilename(confirmoverwrite = True, initialdir = mainPath + '\\Infographics', initialfile = 'infographic.png', filetypes = [('PNG', '*.png')])
+        if finalPath == '':
+            messagebox.showwarning("Warning", 'File not saved.')
+            return
+    except Exception:
+        finalPath = filedialog.asksaveasfilename(confirmoverwrite = True, initialdir = mainPath, initialfile = 'infographic.png', filetypes = [('PNG', '*.png')])
+        if finalPath == '':
+            messagebox.showwarning("Warning", 'File not saved.')
+            return
 
     #save
     source.save(finalPath.rstrip('.png') + '.png', 'PNG')
 
 def loadDicts():
-    global itemDicts, itemDict
+    global itemDicts, itemDict, manualSort
     try:
         if manualSort == True:    raise Exception('Manual sort is on.')
         for dictFile in os.listdir(mainPath + '\\Dictionaries'):
@@ -246,15 +255,7 @@ def loadDicts():
                 itemDict = genDict(f.read())
                 itemDicts[index] = itemDict
     except Exception as e:
-        try:
-            itemDicts, itemDict = [], {}
-            for dictFile in os.listdir(mainPath + '\\Dictionaries'):
-                with open(mainPath + '\\Dictionaries\\' + dictFile, 'r', encoding = "utf-8") as f:
-                    itemDict = {**itemDict, **(genDict(f.read()))}
-        except Exception as e:
-            messagebox.showerror('Error', 'Unknown dictionary error: ' + str(e))
-            exit()
-        
+        manualSort = True
         messagebox.showerror('Error', 'Dictionary Error: ' + str(e) + '\n\nUsing manual sorting.')
 
 def optionsMenu():
@@ -348,6 +349,7 @@ if __name__ == '__main__':
         c = Config()
     except Exception as e:
         messagebox.showerror('Error', 'Config load error: ' + str(e))
+        exit()
 
     manualSort = c.getManual()
 
