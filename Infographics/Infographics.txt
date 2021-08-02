@@ -1,0 +1,2 @@
+This folder can be used to store infographics in. It is the default folder when selecting a folder.
+You can delete this file, and this folder. They are not necessary to the infographic maker's functioning.
