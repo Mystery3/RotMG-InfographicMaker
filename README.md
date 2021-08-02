@@ -20,4 +20,7 @@ The link must not have any "https:" or "http:". The infographic maker is case-se
 # Manual Sorting
 The options button and the config.txt (use 1 or 0) contain an option for manual sorting. If it is on, the item will be sorted as given in the text box.
 
+# Note
+Python file is the source code. If you want to run it you will have to put it in place of the .exe file in the .zip or in an identical folder to the .zip.
+
 # Instructions on using the app can be found in the app
