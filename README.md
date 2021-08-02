@@ -13,6 +13,6 @@ To add or modify a dictionary entry, make sure you follow the format:
 
 "Item Name" src="//link"
 
-The link must not have any "https:" or "http:". The infographic maker is caps-sensitive so it is recommended that you capitalize the item name as a title.
+The link must not have any "https:" or "http:". The infographic maker is case-sensitive so it is recommended that you capitalize the item name as a title.
 
 # 
