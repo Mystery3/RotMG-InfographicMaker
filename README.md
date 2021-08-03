@@ -9,13 +9,13 @@ An internet connection is required.
 This has not been tested outside of Windows 10.
 
 # Priority Sorting and Dictionary Modifying
-Dictionary files must start with a number followed by an exclamation mark (!). The number determines the priority of the items in the dictionary file. The first items rendered by the infographic maker come from the file that starts with 1!, then 2!, then 3!, and so on. New dictionary files can be added and others can be removed, I try to keep the files  updated to contain all the items from the game.
+Dictionary files must start with a number followed by an exclamation mark (!). The number determines the priority of the items in the dictionary file. The first items rendered by the infographic maker come from the file that starts with 1!, then 2!, then 3!, and so on. New dictionary files can be added and others can be removed, I try to keep the files  updated to contain all the items from the game. 
 
 To add or modify a dictionary entry, make sure you follow the format:
 
-"Item Name" src="//link"
+Item Name | https://www.example.com/png.png
 
-The link must not have any "https:" or "http:". The infographic maker is case-sensitive so it is recommended that you capitalize the item name as a title.
+The infographic maker is case-sensitive so it is recommended that you capitalize the item name as a title. The exact string " | " separates names and links. You can also edit the dungeons.txt file the same way, not only the item dictionaries.
 
 # Manual Sorting
 The options button and the config.txt (use 1 or 0) contain an option for manual sorting. If it is on, the item will be sorted as given in the text box. More settings to be added in the future.
