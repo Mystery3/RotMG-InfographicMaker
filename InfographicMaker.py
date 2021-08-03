@@ -63,9 +63,13 @@ def genDict(f):
 
 def loadDungeons():
     global dungeons, dungeonNames
-    with open(mainPath + '\\dungeons.txt', 'r', encoding = 'utf-8') as f:
-        dungeons = genDict(f.read())
-    dungeonNames = sorted(dungeons.keys())
+    try:
+        with open(mainPath + '\\dungeons.txt', 'r', encoding = 'utf-8') as f:
+            dungeons = genDict(f.read())
+        dungeonNames = sorted(dungeons.keys())
+    except Exception as e:
+        messagebox.showerror('Error', 'Dungeons load error: ' + str(e))
+        exit() 
 
 def loadDicts():
     global itemDicts, itemDict, manualSort
