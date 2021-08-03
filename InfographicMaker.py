@@ -262,7 +262,7 @@ def optionsMenu():
     #options tk
     options = Toplevel()
     options.title('Options')
-    options.geometry('{}x{}'.format(int(maxX/3.84), int(maxY/2.571))) #420 on 1080p
+    options.geometry('{}x{}'.format(int(maxX/3.84), int(maxY/2.571))) #500, 420 on 1080p
     options.resizable('FALSE', 'FALSE')
     options.configure(background = '#252a2d')
 
