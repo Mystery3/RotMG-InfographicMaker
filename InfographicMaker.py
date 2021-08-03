@@ -53,29 +53,48 @@ class Config:
         manualSort = manual     
 
 def genDict(f):
-    #works by counting quotations, should probably be changed/updated to something faster
+    #generate dict from formatted txt file
     dict = {}
-    qs = 0
-    tbw, tbw2 = '', ''
-    for i in range(len(f)):
-        if f[i] == '\"':
-            qs += 1
-            continue
-        if qs == 1:
-            tbw = tbw + f[i]
-        elif qs == 3:
-            tbw2 = tbw2 + f[i]
-        elif qs == 4:
-            dict[tbw] = tbw2
-            tbw, tbw2 = '', ''
-            qs = 0
+    lines = f.splitlines()
+    for line in lines:
+        linePart = line.partition(' | ')
+        dict[linePart[0]] = linePart[2]
     return dict
+
+def loadDungeons():
+    global dungeons, dungeonNames
+    with open(mainPath + '\\dungeons.txt', 'r', encoding = 'utf-8') as f:
+        dungeons = genDict(f.read())
+    dungeonNames = sorted(dungeons.keys())
+
+def loadDicts():
+    global itemDicts, itemDict, manualSort
+    try:
+        if manualSort == True:    raise Exception('Manual sort is on.')
+        for dictFile in os.listdir(mainPath + '\\Dictionaries'):
+            #index finding
+            index = ''
+            if '!' not in dictFile:    raise ValueError('{} is missing \"!\" indicator for priority sorting.'.format(dictFile))
+            for char in dictFile:
+                if char == '!':    break
+                index = index + char
+            if not index.isdigit():    raise ValueError('{} has invalid characters before \"!\" indicator.'.format(dictFile))
+            index = int(index) - 1
+
+            #dict defining
+            itemDict = {}
+            with open(mainPath + '\\Dictionaries\\' + dictFile, 'r', encoding = "utf-8") as f:
+                itemDict = genDict(f.read())
+                itemDicts[index] = itemDict
+    except Exception as e:
+        manualSort = True
+        messagebox.showerror('Error', 'Dictionary Error: ' + str(e) + '\n\nUsing manual sorting.')
 
 def genInfographic():
     #instructions
     if startTexts[0].get('1.0', 'end') == "Press 'Go!' for instructions.\n":
         messagebox.showinfo('Instructions',
-            "1. Choose a dungeon with the drop-down menu or type it.\n2. Input a background link where prompted, or leave it blank\n    for an empty background.\n3. Type or paste the name of each item that you want\n    displayed. Spelling counts, if you can't figure out the\n    correct spelling, see the dictionaries folder for a list of all\n    valid keys.\n4. The '+' amd '-' buttons alter the amount of infographics\n    generated. You can have up to 3 at once.\n5. Once all items are inputted and all desired fields are\n    fulfilled, press 'Go!' to choose a folder to save to and\n    generate the infographic.\n6. For instructions on priority sorting and options, see the\n    readme file.")
+            "1. Choose a dungeon with the drop-down menu or type it.\n2. Input a background link where prompted, or leave it blank\n    for an empty background.\n3. Type or paste the name of each item that you want\n    displayed. Spelling counts, if you can't figure out the\n    correct spelling, see the dictionaries folder for a list of all\n    valid keys.\n4. The '+' amd '-' buttons alter the amount of infographics\n    generated. You can have up to 4 at once.\n5. Once all items are inputted and all desired fields are\n    fulfilled, press 'Go!' to choose a folder to save to and\n    generate the infographic.\n6. For instructions on priority sorting and options, see the\n    readme file.")
         return
 
     #vars
@@ -102,7 +121,7 @@ def genInfographic():
                 dungeonLinkList.append(dungeons[dungeonChoices[i].get()])
             except:
                 dungeonList.append(dungeonChoices[i].get())
-                dungeonLinkList.append('//upload.wikimedia.org/wikipedia/commons/8/89/HD_transparent_picture.png')
+                dungeonLinkList.append('https://upload.wikimedia.org/wikipedia/commons/8/89/HD_transparent_picture.png')
                 messagebox.showwarning('Warning', 'Unexpected dungeon.')
             
             #split text by line, add stripped list to lists
@@ -118,23 +137,24 @@ def genInfographic():
 
     #geometry
     xaxis = 400
-    yaxis = (length * 60) + (rows * 40)# + 20 (was for signature)
+    yaxis = (length * 60) + ((length - 1) * 10) + (rows * 40)# + 20 (was for signature)
 
     #image start
     source = Image.new('RGBA', (xaxis, yaxis), (255, 255, 255, 0))
     draw = ImageDraw.Draw(source)
 
+    #bg is currently disabled
     #try bg link, ignore if invalid
-    try: 
-        bg = Image.open(requests.get(bgEntry.get(), stream=True).raw).resize((xaxis, yaxis), resample = Image.BOX).convert('RGBA')
-        source.alpha_composite(bg, (0, 0))
-    except:
-        pass
+    #try: 
+    #    bg = Image.open(requests.get(bgEntry.get(), stream=True).raw).resize((xaxis, yaxis), resample = Image.BOX).convert('RGBA')
+    #    source.alpha_composite(bg, (0, 0))
+    #except:
+    #    pass
 
     #the girth
     for i in range(length):
         #get dungeon pic, resize if needed, paste
-        dungeonImage = Image.open(requests.get('https:' + dungeonLinkList[i], stream=True).raw).convert('RGBA')
+        dungeonImage = Image.open(requests.get(dungeonLinkList[i], stream=True).raw).convert('RGBA')
         if dungeonImage.size[0] > 60 or dungeonImage.size[1] > 60:
             dungeonImage = dungeonImage.resize((56, 56), resample = Image.BOX)
         source.alpha_composite(dungeonImage, (x, y))
@@ -158,7 +178,7 @@ def genInfographic():
             for j in range(len(itemLists[i])):
                 try:
                     #open, resize, convert, paste
-                    itemImage = Image.open(requests.get('https:' + itemDict[itemLists[i][j]], stream=True).raw).resize((40, 40), resample = Image.BOX).convert('RGBA')
+                    itemImage = Image.open(requests.get(itemDict[itemLists[i][j]], stream=True).raw).resize((40, 40), resample = Image.BOX).convert('RGBA')
                     source.alpha_composite(itemImage, (x, y))
 
                     #column/row handling
@@ -188,7 +208,7 @@ def genInfographic():
                 for j in range(len(itemLists[i])):
                     try:
                         #open, resize, convert, paste, add to non-missing
-                        itemImage = Image.open(requests.get('https:' + itemDicts[listIndex][itemLists[i][j]], stream=True).raw).resize((40, 40), resample = Image.BOX).convert('RGBA')
+                        itemImage = Image.open(requests.get(itemDicts[listIndex][itemLists[i][j]], stream=True).raw).resize((40, 40), resample = Image.BOX).convert('RGBA')
                         source.alpha_composite(itemImage, (x, y))
                         notMissingSet.add(itemLists[i][j])
 
@@ -235,29 +255,6 @@ def genInfographic():
     #save
     source.save(finalPath.rstrip('.png') + '.png', 'PNG')
 
-def loadDicts():
-    global itemDicts, itemDict, manualSort
-    try:
-        if manualSort == True:    raise Exception('Manual sort is on.')
-        for dictFile in os.listdir(mainPath + '\\Dictionaries'):
-            #index finding
-            index = ''
-            if '!' not in dictFile:    raise ValueError('{} is missing \"!\" indicator for priority sorting.'.format(dictFile))
-            for char in dictFile:
-                if char == '!':    break
-                index = index + char
-            if not index.isdigit():    raise ValueError('{} has invalid characters before \"!\" indicator.'.format(dictFile))
-            index = int(index) - 1
-
-            #dict defining
-            itemDict = {}
-            with open(mainPath + '\\Dictionaries\\' + dictFile, 'r', encoding = "utf-8") as f:
-                itemDict = genDict(f.read())
-                itemDicts[index] = itemDict
-    except Exception as e:
-        manualSort = True
-        messagebox.showerror('Error', 'Dictionary Error: ' + str(e) + '\n\nUsing manual sorting.')
-
 def optionsMenu():
     #global
     global manualSort
@@ -265,19 +262,22 @@ def optionsMenu():
     #options tk
     options = Toplevel()
     options.title('Options')
-    options.geometry('500x360')
+    options.geometry('{}x{}'.format(int(maxX/3.84), int(maxY/2.571))) #420 on 1080p
     options.resizable('FALSE', 'FALSE')
     options.configure(background = '#252a2d')
 
     optionsLabel = Label(options, text = 'Options:', style = 'options.TLabel')
-    optionsLabel.pack(pady = 30)
+    optionsLabel.pack(pady = int(maxY/36)) #30 on 1080p
 
     manualCheck = Checkbutton(options, text = 'Manual Sorting', style = 'manual.TCheckbutton', command = c.changeManual)
     if manualSort:    manualCheck.state(('selected',))
-    manualCheck.pack(pady = 30)
+    manualCheck.pack(pady = int(maxY/64)) #15 on 1080p
+
+    reloadDungeons = Button(options, text = 'Reload Dungeons', style = 'dungeons.TButton', command = loadDungeons)
+    reloadDungeons.pack(pady = int(maxY/64)) #15 on 1080p
 
     creditLabel = Label(options, text = 'Made by Flaps#9562', style = 'options.TLabel')
-    creditLabel.pack(pady = 30)
+    creditLabel.pack(pady = int(maxY/36)) #30 on 1080p
 
     options.mainloop()
 
@@ -301,7 +301,8 @@ def addGraphic():
 
     startText = Text(frame,
         font = defaultFont,
-        height = 25,
+        height = 20,
+        width = 60,
         borderwidth = 1,
         relief = 'flat',
         highlightthickness = 1,
@@ -320,29 +321,31 @@ def manageWindow():
     #resize window, pack/repack widgets, button handling
     length = len(dungeonChoices)
 
-    window.geometry('{}x770'.format(length*565+50))
+    #fit to monitor
+    window.geometry('{}x{}'.format(length*int(maxX/4.5)+int(maxX/38.4), int(maxY/1.5766))) #len * ~427 + 50, 685 on 1080p
 
     for i in range(length):
-        dungeonChoices[i].grid(column = i*2, row = 0, pady = 20, columnspan = 2, sticky = 'w', ipadx = 55)
-        startTexts[i].grid(column = i*2, row = 1, columnspan = 2, ipady = 100)
+        dungeonChoices[i].grid(column = i*2, row = 0, pady = int(maxY/54), columnspan = 2, sticky = 'we') #pady 20, ipadx 55 on 1080p
+        startTexts[i].grid(column = i*2, row = 1, columnspan = 2, ipady = int(maxY/10.8)) #ipady 100 on 1080p
 
     remButton.grid(column = 1, row = 0)
     addButton.grid(column = 3, row = 0)
 
     if length == 1:
         remButton.grid_remove()
-    elif length == 3:
+    elif length == 4:
         addButton.grid_remove()
 
-    frame.grid(row = 0, column = 0, padx = 25)
+    frame.grid(row = 0, column = 0, padx = int(maxX/76.8)) #padx 25 on 1080p
     buttonFrame.grid(row = 2, column = 0)
 
 if __name__ == '__main__':
     #vars
-    dungeons = {'Pirate Cave': '//i.imgur.com/OqzVQuc.png', 'Forest Maze': '//static.drips.pw/rotmg/wiki/Environment/Portals/Forest%20Maze%20Portal.png', 'Spider Den': '//i.imgur.com/up93OlG.png', 'Snake Pit': '//i.imgur.com/lHeUeoK.png', 'Forbidden Jungle': '//static.drips.pw/rotmg/wiki/Environment/Portals/Forbidden%20Jungle%20Portal.png', 'The Hive': '//static.drips.pw/rotmg/wiki/Environment/Portals/The%20Hive%20Portal.png', 'Magic Woods': '//i.imgur.com/mvUTUNo.png', 'Sprite World': '//i.imgur.com/LO1AmVL.png', 'Candyland Hunting Grounds': '//static.drips.pw/rotmg/wiki/Environment/Portals/Candyland%20Portal.png', 'Ancient Ruins': '//i.imgur.com/d7MSK2x.png', 'Cave of a Thousand Treasures': '//static.drips.pw/rotmg/wiki/Environment/Portals/Treasure%20Cave%20Portal.png', 'Undead Lair': '//i.imgur.com/pR8Dgth.png', 'Abyss of Demons': '//i.imgur.com/1NziBak.png', 'Manor of the Immortals': '//static.drips.pw/rotmg/wiki/Environment/Portals/Manor%20of%20the%20Immortals%20Portal.png', "Puppet Master's Theatre": '//i.imgur.com/2JZNslO.png', 'Toxic Sewers': '//i.imgur.com/4c03WNV.png', 'Cursed Library': '//i.imgur.com/Kcb7YfX.png', 'Haunted Cemetery': '//i.imgur.com/n5HqTlm.png', 'The Machine': '//i.imgur.com/eFihsCs.png', 'The Inner Workings': '//i.imgur.com/6RdEOw1.png', 'Mad Lab': '//i.imgur.com/eJNrKaO.png', 'Deadwater Docks': '//i.imgur.com/CjceJZ1.png', 'Woodland Labyrinth': '//i.imgur.com/4dn3rcG.png', 'The Crawling Depths': '//i.imgur.com/UfTq4bg.png', 'Parasite Chambers': '//i.imgur.com/xldgpdz.png', 'Beachzone': '//static.drips.pw/rotmg/wiki/Environment/Portals/Beachzone%20Portal.png', 'The Third Dimension': '//i.imgur.com/qlPofut.png', "Davy Jones' Locker": '//i.imgur.com/xpDdz03.png', 'Mountain Temple': '//i.imgur.com/SY0Jtnp.png', 'Lair of Draconis': '//static.drips.pw/rotmg/wiki/Environment/Portals/Consolation%20of%20Draconis%20Portal.png', 'Ocean Trench': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ocean%20Trench%20Portal.png', 'Ice Cave': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ice%20Cave%20Portal.png', 'Tomb of the Ancients': '//static.drips.pw/rotmg/wiki/Environment/Portals/Tomb%20of%20the%20Ancients%20Portal.png', 'Fungal Cavern': '//i.imgur.com/OElJTuL.png', 'Crystal Cavern': '//i.imgur.com/BHwk26f.png', 'The Nest': '//i.imgur.com/WQ95Y0j.png', 'The Shatters': '//static.drips.pw/rotmg/wiki/Environment/Portals/The%20Shatters.png', 'Lost Halls': '//i.imgur.com/uhDj0M5.png', 'Cultist Hideout': '//i.imgur.com/fg2BtCm.png', 'The Void': '//i.imgur.com/TNZ8fOw.png', 'Malogia': '//i.imgur.com/JaSkGXC.png', 'Untaris': '//i.imgur.com/rlkbOzV.png', 'Forax': '//i.imgur.com/j2CMfTA.png', 'Katalund': '//i.imgur.com/YDfY8FU.png', "Oryx's Chamber": '//i.imgur.com/8KBE64D.png', 'Wine Cellar': '//i.imgur.com/ozNWFFN.png', 'Janus the Doorwarden': '//i.imgur.com/ZfIKmgX.png', "Oryx's Sanctuary": '//i.imgur.com/NRwP3hq.png', 'Lair of Shaitan': '//static.drips.pw/rotmg/wiki/Environment/Portals/Lair%20of%20Shaitan%20Portal.png', "Puppet Master's Encore": '//static.drips.pw/rotmg/wiki/Environment/Portals/Puppet%20Encore%20Portal.png', 'Cnidarian Reef': '//i.imgur.com/qjd04By.png', 'Secluded Thicket': '//i.imgur.com/8vEAT8t.png', 'High Tech Terror': '//i.imgur.com/Y9LAhlJ.png', 'Heroic Undead Lair': '//i.imgur.com/31NX1Ld.png', 'Heroic Abyss of Demons': '//i.imgur.com/zz6D2lz.png', 'Battle for the Nexus': '//static.drips.pw/rotmg/wiki/Environment/Portals/Battle%20Nexus%20Portal.png', "Belladonna's Garden": '//i.imgur.com/VTXGPSy.png', 'Ice Tomb': '//static.drips.pw/rotmg/wiki/Environment/Portals/Ice%20Tomb%20Portal.png', 'Rainbow Road': '//static.drips.pw/rotmg/wiki/Environment/Portals/Rainbow%20Road.png', "Santa's Workshop": '//i.imgur.com/U7uy7oD.png', 'Mad God Mayhem': '//i.imgur.com/yRv9Dve.png', 'Tutorial': '//static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Portal.png', "Oryx's Kitchen": '//static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Portal.png', 'The Realm': '//static.drips.pw/rotmg/wiki/Environment/Portals/Nexus%20Portal.png', '': '//upload.wikimedia.org/wikipedia/commons/8/89/HD_transparent_picture.png'}
-    dungeonNames = sorted(dungeons.keys())
-    dungeonChoices, startTexts, itemDicts, itemDict = [], [], [], {}
+    dungeonChoices, dungeonNames, startTexts, itemDicts, itemDict, dungeons = [], [], [], [], {}, {}
     mainPath = os.path.dirname(os.path.realpath(__file__))
+
+    #load dungeon dict
+    loadDungeons()
 
     #config getting
     try:
@@ -362,15 +365,19 @@ if __name__ == '__main__':
     window.option_add('*TCombobox*Listbox.foreground', '#dddddd')
     window.option_add('*TCombobox*Listbox.selectBackground', '#4d6f8c')
 
+    #geometry managing
+    maxX = window.wm_maxsize()[0]
+    maxY = window.wm_maxsize()[1]
+
     style = Style()
     style.theme_use('clam')
     
     defaultFont = font.nametofont("TkDefaultFont")
-    defaultFont.configure(size = 10)
+    defaultFont.configure(size = int(maxX/192)) #10 on 1080p
     largerDefaultFont = defaultFont.copy()
-    largerDefaultFont.configure(size = 20)
+    largerDefaultFont.configure(size = int(maxX/96)) #20 on 1080p
     largestDefaultFont = defaultFont.copy()
-    largestDefaultFont.configure(size = 30)
+    largestDefaultFont.configure(size = int(maxX/64)) #30 on 1080p
 
     style.configure('.',
         background = '#252a2d',
@@ -393,29 +400,36 @@ if __name__ == '__main__':
         gripcount = 0)
 
     style.configure('options.TLabel',
-        font = largestDefaultFont,)
+        font = largestDefaultFont)
 
     style.configure('manual.TCheckbutton',
         font = largerDefaultFont,
-        indicatorsize = 15)
+        background = '#131419',
+        padding = 5,
+        indicatorsize = int(maxX/128)) #15 on 1080p
+
+    style.configure('dungeons.TButton',
+        font = largerDefaultFont)
 
     style.map('TScrollbar', background = [('active', '#42444e')])
     style.map('TCombobox', background = [('pressed', '#42444e')], bordercolor = [('focus', '#6c9cc4')])
-    style.map('TButton', background = [('active', '#42444e')])
+    style.map('TButton', background = [('active', '#42444e')], foreground = [('disabled', '#131419')])
+    style.map('dungeons.TButton', background = [('active', '#eeebe7')], foreground = [('active', '#252a2d')])
     style.map('TCheckbutton', foreground = [('active', '#252a2d')])
 
     frame = Frame(window)
     buttonFrame = Frame(window)
     startButton = Button(buttonFrame, text = 'Go!', command = genInfographic, width = 5)
-    startButton.grid(column = 2, row = 0, pady = 20)
+    startButton.grid(column = 2, row = 0, pady = int(maxY/54)) #20 on 1080p
     addButton = Button(buttonFrame, text = '+', command = addGraphic, width = 3)
     remButton = Button(buttonFrame, text = '-', command = remGraphic, width = 3)
     optionsButton = Button(window, text = '⚙', width = 3, command = optionsMenu)
-    optionsButton.grid(column = 0, row = 2, sticky = 'w', padx = 25)
+    optionsButton.grid(column = 0, row = 2, sticky = 'w', padx = int(maxX/76.8)) #25 on 1080p
 
-    bgEntry = Entry(frame, font = defaultFont)
-    bgEntry.insert('end', 'BG Link (empty for transparent)')
-    bgEntry.grid(column = 1, row = 0, sticky = 'e', ipadx = 60)
+    #bg is currently disabled
+    #bgEntry = Entry(frame, font = defaultFont)
+    #bgEntry.insert('end', 'BG Link (empty for transparent)')
+    #bgEntry.grid(column = 1, row = 0, sticky = 'e', ipadx = int(maxX/32)) #60 on 1080p
 
     #initiate
     addGraphic()
