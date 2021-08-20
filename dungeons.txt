@@ -63,3 +63,7 @@ Tutorial | https://static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Port
 Oryx's Kitchen | https://static.drips.pw/rotmg/wiki/Environment/Portals/Dungeon%20Portal.png
 The Realm | https://static.drips.pw/rotmg/wiki/Environment/Portals/Nexus%20Portal.png
  | https://upload.wikimedia.org/wikipedia/commons/8/89/HD_transparent_picture.png
+Gift of the Void | https://i.imgur.com/DYS3eqp.png
+Gift of the Daeva | https://i.imgur.com/63k7rn4.png
+Void Prison | https://i.imgur.com/fa9IaY1.png
+Daeva Prison | https://i.imgur.com/shxmwIx.png
