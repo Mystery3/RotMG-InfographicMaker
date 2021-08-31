@@ -144,7 +144,7 @@ def genInfographic():
     yaxis = (length * 60) + ((length - 1) * 10) + (rows * 40)# + 20 (was for signature)
 
     #image start
-    source = Image.new('RGBA', (xaxis, yaxis), (255, 255, 255, 0))
+    source = Image.new('RGBA', (xaxis, yaxis), (0, 0, 0, 0))
     draw = ImageDraw.Draw(source)
 
     #bg is currently disabled
