@@ -117,6 +117,13 @@ def genInfographic():
             with open(mainPath + '\\Dictionaries\\' + dictFile, 'r', encoding = "utf-8") as f:
                 itemDict = {**itemDict, **(genDict(f.read()))}
     
+    tokenDict = {}
+    for dictFile in os.listdir(mainPath + '\\Dictionaries'):
+        if 'token' in dictFile.lower():
+            with open(mainPath + '\\Dictionaries\\' + dictFile, 'r', encoding = "utf-8") as f:
+                tokenDict = {**tokenDict, **genDict(f.read())}
+                tokenDictKeys = set(tokenDict.keys())
+
     #get dungeons and items
     try:
         for i in range(length):
@@ -224,6 +231,18 @@ def genInfographic():
                 try:
                     #open, resize, convert, paste
                     itemImage = Image.open(requests.get(itemDict[itemLists[i][j]], stream=True).raw).resize((40, 40), resample = Image.BOX).convert('RGBA')
+
+                    #add number for tokens
+                    if itemLists[i][j] in tokenDictKeys:
+                        quantity = itemLists[i][j].rpartition(' ')[2].strip('x')
+
+                        itemImageDraw = ImageDraw.Draw(itemImage)
+                        itemImageDraw.text((1, 1), quantity,  '1', (0, 0, 0, 255), smallFont)
+                        itemImageDraw.text((3, 1), quantity,  '1', (0, 0, 0, 255), smallFont)
+                        itemImageDraw.text((3, 3), quantity,  '1', (0, 0, 0, 255), smallFont)
+                        itemImageDraw.text((1, 3), quantity,  '1', (0, 0, 0, 255), smallFont)
+                        itemImageDraw.text((2, 2), quantity,  '1', (255, 255, 255, 255), smallFont)
+
                     source.alpha_composite(itemImage, (x, y))
 
                     #column/row handling
@@ -251,6 +270,18 @@ def genInfographic():
                     try:
                         #open, resize, convert, paste, add to non-missing
                         itemImage = Image.open(requests.get(itemDicts[listIndex][itemLists[i][j]], stream=True).raw).resize((40, 40), resample = Image.BOX).convert('RGBA')
+
+                        #add number for tokens
+                        if itemLists[i][j] in tokenDictKeys:
+                            quantity = itemLists[i][j].rpartition(' ')[2].strip('x')
+
+                            itemImageDraw = ImageDraw.Draw(itemImage)
+                            itemImageDraw.text((1, 1), quantity, (0, 0, 0, 255), smallFont)
+                            itemImageDraw.text((3, 1), quantity, (0, 0, 0, 255), smallFont)
+                            itemImageDraw.text((3, 3), quantity, (0, 0, 0, 255), smallFont)
+                            itemImageDraw.text((1, 3), quantity, (0, 0, 0, 255), smallFont)
+                            itemImageDraw.text((2, 2), quantity, (255, 255, 255, 255), smallFont)
+
                         source.alpha_composite(itemImage, (x, y))
 
                         if xChangeCount != 9:
@@ -464,7 +495,7 @@ if __name__ == '__main__':
     #font loading
     try:
         normalFont = ImageFont.truetype(mainPath + '\calibrib.ttf', 26)
-        #smallFont = ImageFont.truetype(mainPath + '\calibrib.ttf', 12)
+        smallFont = ImageFont.truetype(mainPath + '\calibrib.ttf', 12)
     except:
         messagebox.showerror('Error', 'Font load error.')
 
