@@ -17,6 +17,9 @@ Item Name | https://www.example.com/png.png
 
 The infographic maker is case-sensitive so it is recommended that you capitalize the item name as a title. The exact string " | " separates names and links. You can also edit the dungeons.txt file the same way, not only the item dictionaries.
 
+# Quantity Numbers for Tokens
+Any dictionary file with "token" in its name will be expected to end with a number or x followed by a number separated by a space. This number will be drawn onto the image in the infographic.
+
 # Manual Sorting
 The options button and the config.txt (use 1 or 0) contain an option for manual sorting. If it is on, the item will be sorted as given in the text box. More settings to be added in the future.
 
