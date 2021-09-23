@@ -281,7 +281,7 @@ def main():
     #util frame
     util_frame = ttk.Frame(root)
 
-    help_button = ttk.Button(util_frame, text='?', command=lambda: tkinter.messagebox.showinfo('Instructions', '\t1. Choose a dungeon with the dropdown menu or type it in for a custom name.\n\t2. In the larger field, type the names of all the items you want to render, with each one on a separate line.\n\t3. Press "Go!" and select the file destination of your choosing.\n\tMultiple Infographics: To make multiple infographics, use the plus and minus buttons to add or remove an infographic.\n\tAdditional Notes: If you changed the contents of the dictionary files while the app is open, you can reload them with the reload button.\n\tManual Sorting: Turning on the manual sort toggle will sort the items as given, not by dictionary order.'))
+    help_button = ttk.Button(util_frame, text='?', command=lambda: tkinter.messagebox.showinfo('Instructions', '1. Choose a dungeon with the dropdown menu or type it in\n    for a custom name.\n\n2. In the larger field, type the names of all the items you want\n    to render, with each one on a separate line.\n\n3. Press "Go!" and select the file destination of your choosing.\nMultiple Infographics: To make multiple infographics, use the\n    plus and minus buttons to add or remove an infographic.\n\nAdditional Notes: If you changed the contents of the\n    dictionary files while the app is open, you can reload them\n    with the reload button.\n\nManual Sorting: Turning on the manual sort toggle will sort\n    the items as given, not by dictionary order.\n\nMade by Flaps#9562'))
     help_button.grid(row=0, column=0)
 
     reload_button = ttk.Button(util_frame, text='⟳', command=lambda: graphic.update_dicts)
