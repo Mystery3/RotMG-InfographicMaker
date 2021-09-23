@@ -6,7 +6,7 @@ All files must be in the same folder as application except Infographics (it is t
 
 An internet connection is required.
 
-This has not been tested outside of Windows 10.
+Intended for Windows.
 
 # Priority Sorting and Dictionary Modifying
 Dictionary files must start with a number followed by an exclamation mark (!). The number determines the priority of the items in the dictionary file. The first items rendered by the infographic maker come from the file that starts with 1!, then 2!, then 3!, and so on. New dictionary files can be added and others can be removed, I try to keep the files  updated to contain all the items from the game. 
