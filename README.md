@@ -17,8 +17,11 @@ Item Name | https://www.example.com/png.png
 
 The infographic maker is case-sensitive so it is recommended that you capitalize the item name as a title. The exact string " | " separates names and links. You can also edit the dungeons.txt file the same way, not only the item dictionaries.
 
+# Intra-Dictionary Priority Sorting
+Items are read in dictionaries from the first line to the last, so an item at the first line would before earlier than an item below it.
+
 # Quantity Numbers for Tokens
-Any item ending with x followed by a number (with an optional space between) will have that number drawn onto its image.
+Any item ending with x followed by a number (with an optional space between) will have that number drawn onto its image. This is assuming that the token followed by x## exists in a dictionary
 
 # Manual Sorting
 If manual sorting is on, the item will be sorted as given in the text box.
@@ -27,4 +30,3 @@ If manual sorting is on, the item will be sorted as given in the text box.
 Python file is the source code. It requires all the same things to run as the .exe.
 
 # Instructions on using the app can be found in the app
-Not yet.
