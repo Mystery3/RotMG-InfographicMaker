@@ -11,8 +11,9 @@ from io import BytesIO
 from math import ceil
 from PIL import Image, ImageDraw, ImageFont
 
-MAIN_PATH = os.path.dirname(os.path.realpath(__file__))
+import cProfile
 
+MAIN_PATH = os.path.dirname(os.path.realpath(__file__))
 FONT = ImageFont.truetype(f'{MAIN_PATH}\\calibrib.ttf', 26)
 
 #for managing text boxes, comboboxes, item lists, dungeon lists, and for calling infographic commands
@@ -66,13 +67,13 @@ def load_dungeons() -> tuple[list, dict]:
         #put names and links into dictionary
         for line in dungeon_lines:
             match = re.match(r'(.+)\s\|\s(.+)', line) #split at " | "
-            base_dungeon_dict = {**base_dungeon_dict, match.group(1): match.group(2)}
+            base_dungeon_dict[match.group(1)] = match.group(2)
 
         dungeon_names = sorted(base_dungeon_dict)
 
         #sort dictionary (hopefully for intra-dictionary sorting?)
         for dungeon in dungeon_names:
-            final_dungeon_dict = {**final_dungeon_dict, dungeon: base_dungeon_dict[dungeon]}
+            final_dungeon_dict[dungeon] = base_dungeon_dict[dungeon]
 
         return (dungeon_names, final_dungeon_dict)
         
@@ -98,7 +99,7 @@ def load_dictionaries() -> dict:
             with open(f'{MAIN_PATH}\\Dictionaries\\{filename}', 'r', encoding='utf-8') as items:
                 for line in items.readlines():
                     match = re.match(r'(.+)\s\|\s(.+)', line) #split at " | "
-                    items_dict = {**items_dict, match.group(1): match.group(2)}
+                    items_dict[match.group(1)] = match.group(2)
 
         return items_dict
 
@@ -196,6 +197,12 @@ async def generate_infographic(dungeon_dict: dict, items_dict: dict, dungeon: st
     return image_base
 
 async def stitch_infographics(dungeon_dict: dict, items_dict: dict, dungeons: list[str], items: list[list[str]], manual: bool) -> None:
+    #prompt for save path, return if cancelled
+    save_path = tkinter.filedialog.asksaveasfilename(confirmoverwrite = True, initialdir = MAIN_PATH, initialfile = 'infographic.png', filetypes = [('PNG', '*.png')])
+    if save_path == '':
+        tkinter.messagebox.showwarning('Warning', 'File not saved.')
+        return
+
     #create tasks for each infographic (length is based on amount of dungeons)
     infographic_funcs = []
     for i in range(len(dungeons)):
@@ -203,12 +210,6 @@ async def stitch_infographics(dungeon_dict: dict, items_dict: dict, dungeons: li
 
     #grab all infographics (at once!)
     infographics = await asyncio.gather(*infographic_funcs)
-    
-    #prompt for save path, return if cancelled
-    save_path = tkinter.filedialog.asksaveasfilename(confirmoverwrite = True, initialdir = MAIN_PATH, initialfile = 'infographic.png', filetypes = [('PNG', '*.png')])
-    if save_path == '':
-        tkinter.messagebox.showwarning('Warning', 'File not saved.')
-        return
 
     #grab total height and create new base
     total_height = sum([image.size[1] for image in infographics]) - 10
@@ -280,7 +281,7 @@ def main():
     #util frame
     util_frame = ttk.Frame(root)
 
-    help_button = ttk.Button(util_frame, text='?', command=lambda: tkinter.messagebox.showinfo('Instructions', 'blabla'))
+    help_button = ttk.Button(util_frame, text='?', command=lambda: tkinter.messagebox.showinfo('Instructions', '\t1. Choose a dungeon with the dropdown menu or type it in for a custom name.\n\t2. In the larger field, type the names of all the items you want to render, with each one on a separate line.\n\t3. Press "Go!" and select the file destination of your choosing.\n\tMultiple Infographics: To make multiple infographics, use the plus and minus buttons to add or remove an infographic.\n\tAdditional Notes: If you changed the contents of the dictionary files while the app is open, you can reload them with the reload button.\n\tManual Sorting: Turning on the manual sort toggle will sort the items as given, not by dictionary order.'))
     help_button.grid(row=0, column=0)
 
     reload_button = ttk.Button(util_frame, text='⟳', command=lambda: graphic.update_dicts)
